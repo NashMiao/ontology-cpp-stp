@@ -1,0 +1,9 @@
+{
+    "code-runner.executorMap": {
+        "c": "cd $dir && clang $fileName -o $fileNameWithoutExt -Wall -g -O2 -static-libgcc -fcolor-diagnostics --target=x86_64-w64-mingw -std=c11 && $dir$fileNameWithoutExt",
+        "cpp": "cd $dir && g++ $fileName `pkg-config --cflags --libs openssl` -Wall -g -O0 -std=c++11 -o $workspaceRoot/bin/$fileNameWithoutExt && $workspaceRoot/bin/$fileNameWithoutExt"
+    },
+    "files.associations": {
+        "*.ipp": "cpp"
+    }
+}

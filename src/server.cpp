@@ -14,7 +14,8 @@
 
 #define MAXBUF 1024
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   int sockfd, new_fd;
   socklen_t len;
   struct sockaddr_in my_addr, their_addr;
@@ -35,26 +36,32 @@ int main(int argc, char **argv) {
   OpenSSL_add_all_algorithms();
   SSL_load_error_strings();
   ctx = SSL_CTX_new(SSLv23_server_method());
-  if (ctx == NULL) {
+  if (ctx == NULL)
+  {
     ERR_print_errors_fp(stdout);
     exit(1);
   }
-  if (SSL_CTX_use_certificate_file(ctx, argv[4], SSL_FILETYPE_PEM) <= 0) {
+  if (SSL_CTX_use_certificate_file(ctx, "cert.pem", SSL_FILETYPE_PEM) <= 0)
+  {
     ERR_print_errors_fp(stdout);
     exit(1);
   }
-  if (SSL_CTX_use_PrivateKey_file(ctx, argv[5], SSL_FILETYPE_PEM) <= 0) {
+  if (SSL_CTX_use_PrivateKey_file(ctx, "key.pem", SSL_FILETYPE_PEM) <= 0)
+  {
     ERR_print_errors_fp(stdout);
     exit(1);
   }
-  if (!SSL_CTX_check_private_key(ctx)) {
+  if (!SSL_CTX_check_private_key(ctx))
+  {
     ERR_print_errors_fp(stdout);
     exit(1);
   }
-  if ((sockfd = socket(PF_INET, SOCK_STREAM, 0)) == -1) {
+  if ((sockfd = socket(PF_INET, SOCK_STREAM, 0)) == -1)
+  {
     perror("socket");
     exit(1);
-  } else
+  }
+  else
     printf("socket created\n");
 
   bzero(&my_addr, sizeof(my_addr));
@@ -66,33 +73,41 @@ int main(int argc, char **argv) {
     my_addr.sin_addr.s_addr = INADDR_ANY;
 
   if (bind(sockfd, (struct sockaddr *)&my_addr, sizeof(struct sockaddr)) ==
-      -1) {
+      -1)
+  {
     perror("bind");
     exit(1);
-  } else
+  }
+  else
     printf("binded\n");
 
-  if (listen(sockfd, lisnum) == -1) {
+  if (listen(sockfd, lisnum) == -1)
+  {
     perror("listen");
     exit(1);
-  } else
+  }
+  else
     printf("begin listen\n");
 
-  while (1) {
+  while (1)
+  {
     SSL *ssl;
     len = sizeof(struct sockaddr);
 
-    if ((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &len)) == -1) {
+    if ((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &len)) == -1)
+    {
       perror("accept");
       exit(errno);
-    } else
+    }
+    else
       printf("server: got connection from %s, port %d, socket %d\n",
              inet_ntoa(their_addr.sin_addr), ntohs(their_addr.sin_port),
              new_fd);
 
     ssl = SSL_new(ctx);
     SSL_set_fd(ssl, new_fd);
-    if (SSL_accept(ssl) == -1) {
+    if (SSL_accept(ssl) == -1)
+    {
       perror("accept");
       close(new_fd);
       break;
@@ -102,11 +117,13 @@ int main(int argc, char **argv) {
     strcpy(buf, "server->client");
     len = SSL_write(ssl, buf, strlen(buf));
 
-    if (len <= 0) {
+    if (len <= 0)
+    {
       printf("消息'%s'发送失败！错误代码是%d，错误信息是'%s'\n", buf, errno,
              strerror(errno));
       goto finish;
-    } else
+    }
+    else
       printf("消息'%s'发送成功，共发送了%d个字节！\n", buf, len);
 
     bzero(buf, MAXBUF + 1);
